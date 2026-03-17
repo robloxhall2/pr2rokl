@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PR2ROKL | PROTOCOL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+        :root {
+            --bg: #0a0a0a;
+            --player-bg: #121212;
+            --text: #ffffff;
+            --accent: #1DB954; /* Зеленый акцент Spotify */
+            --dim: #b3b3b3;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            overflow: hidden;
+            height: 100dvh;
+        }
+
+        /* Фоновые эффекты */
+        .grid { position: fixed; inset: 0; background-image: linear-gradient(to right, #111 1px, transparent 1px), linear-gradient(to bottom, #111 1px, transparent 1px); background-size: 50px 50px; z-index: -1; opacity: 0.5; }
+        .scanline { position: fixed; width: 100%; height: 5px; background: rgba(255, 255, 255, 0.03); z-index: 100; pointer-events: none; animation: scan 4s linear infinite; }
+        @keyframes scan { from { top: -10%; } to { top: 110%; } }
+
+        /* Навигация */
+        nav { position: fixed; top: 0; width: 100%; padding: 25px; display: flex; justify-content: space-between; z-index: 200; }
+        .status { font-size: 10px; letter-spacing: 2px; color: #444; }
+        .menu { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .menu-btn { background: none; border: none; color: var(--text); font-family: 'Syncopate', sans-serif; font-size: clamp(14px, 2vw, 18px); cursor: pointer; opacity: 0.4; transition: 0.2s; }
+        .menu-btn.active { opacity: 1; border-bottom: 2px solid #fff; }
+
+        /* Секции */
+        main { height: calc(100% - 90px); display: flex; align-items: center; justify-content: center; }
+        .section { display: none; width: 100%; text-align: center; }
+        .section.active { display: block; animation: flick 0.1s linear; }
+        @keyframes flick { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        /* TOUR & SHOP */
+        .tour-stack { font-family: 'Syncopate', sans-serif; font-size: clamp(40px, 10vw, 120px); line-height: 0.8; }
+        #shop-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* ПЛЕЕР (Spotify Style) */
+        .player {
+            position: fixed;
+            bottom: 0; width: 100%;
+            height: 90px;
+            background: var(--player-bg);
+            border-top: 1px solid #282828;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 300;
+        }
+
+        .track-info { display: flex; flex-direction: column; justify-content: center; }
+        .track-name { font-weight: 700; font-size: 14px; color: #fff; white-space: nowrap; }
+        .track-artist { font-size: 11px; color: var(--dim); margin-top: 3px; }
+
+        .player-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .btns { display: flex; align-items: center; gap: 20px; }
+        .p-btn { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; transition: 0.2s; }
+        .p-btn:hover { transform: scale(1.1); color: var(--accent); }
+        .play-pause { font-size: 32px; }
+
+        .progress-container { width: 100%; max-width: 400px; height: 4px; background: #4d4d4d; border-radius: 2px; position: relative; }
+        .progress-bar { height: 100%; background: #fff; width: 0%; border-radius: 2px; }
+
+        /* Курсор */
+        #cursor { width: 20px; height: 20px; border: 1px solid #fff; position: fixed; pointer-events: none; z-index: 1000; mix-blend-mode: difference; display: none; }
+        @media (pointer: fine) { #cursor { display: block; } }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .player { grid-template-columns: 2fr 1fr; padding: 0 15px; }
+            .player-controls { align-items: flex-end; }
+            .progress-container { display: none; }
+            .btns { gap: 15px; }
+            .p-btn.side { display: none; }
+            nav { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div class="grid"></div>
+    <div class="scanline"></div>
+
+    <nav>
+        <div class="status">PR2ROKL // AUDIO.SYS</div>
+        <div class="menu">
+            <button class="menu-btn active" onclick="tab('tour')">TOUR</button>
+            <button class="menu-btn" onclick="tab('shop')">SHOP</button>
+            <button class="menu-btn" onclick="tab('info')">INFO</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="tour" class="section active">
+            <div class="tour-stack"><div style="opacity:0.2">SOON</div><div>SOON</div><div style="opacity:0.2">SOON</div></div>
+        </section>
+
+        <section id="shop" class="section">
+            <canvas id="shop-canvas"></canvas>
+            <p style="position:relative; z-index:10; font-style:italic; opacity:0.3">VOID_CONTENT</p>
+        </section>
+
+        <section id="info" class="section">
+            <a href="https://t.me/pr2rokl" target="_blank" style="color:#fff; text-decoration:none; border: 1px solid #fff; padding: 20px 40px;">TELEGRAM CH.</a>
+        </section>
+    </main>
+
+    <div class="player">
+        <div class="track-info">
+            <div id="t-name" class="track-name">Stay Higher</div>
+            <div id="t-artist" class="track-artist">pr2rokl</div>
+        </div>
+
+        <div class="player-controls">
+            <div class="btns">
+                <button class="p-btn side" onclick="prevTrack()">⏮</button>
+                <button id="playBtn" class="p-btn play-pause" onclick="togglePlay()">▶</button>
+                <button class="p-btn side" onclick="nextTrack()">⏭</button>
+            </div>
+            <div class="progress-container">
+                <div id="progress" class="progress-bar"></div>
+            </div>
+        </div>
+
+        <div style="text-align: right; font-size: 10px; color: #444;" class="p-btn side">
+            VOL: 100%
+        </div>
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+        const tracks = [
+            { name: "Stay Higher", artists: "pr2rokl", file: "project-16_Q09SZjFu.mp3" },
+            { name: "Underground", artists: "pr2rokl, TheRichBoySwag", file: "pr2rokI', TheRichBoySwag - Underground.mp3" },
+            { name: "DANCE", artists: "pr2rokl, nett", file: "pr2rokI', nett - DANCE.mp3" }
+        ];
+
+        let currentTrackIndex = 0;
+        const audio = document.getElementById('audio-player');
+        const playBtn = document.getElementById('playBtn');
+        const progress = document.getElementById('progress');
+
+        function loadTrack(index) {
+            const track = tracks[index];
+            document.getElementById('t-name').innerText = track.name;
+            document.getElementById('t-artist').innerText = track.artists;
+            audio.src = track.file;
+        }
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerText = "⏸";
+            } else {
+                audio.pause();
+                playBtn.innerText = "▶";
+            }
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+            loadTrack(currentTrackIndex);
+            audio.play();
+            playBtn.innerText = "⏸";
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+            loadTrack(currentTrackIndex);
+            audio.play();
+            playBtn.innerText = "⏸";
+        }
+
+        audio.ontimeupdate = () => {
+            const pct = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = pct + "%";
+        };
+
+        // Инициализация
+        loadTrack(0);
+
+        // Вкладки
+        function tab(name) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
+            event.currentTarget.classList.add('active');
+            if(name === 'shop') initShop();
+        }
+
+        // Курсор
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+        });
+
+        // Shop Animation (Кратко)
+        function initShop() {
+            const canvas = document.getElementById('shop-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#333'; ctx.strokeRect(canvas.width/2 - 40, canvas.height/2 + Math.sin(Date.now()/200)*20, 80, 80);
+                if(document.getElementById('shop').classList.contains('active')) requestAnimationFrame(draw);
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
