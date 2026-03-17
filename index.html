@@ -3,153 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PR2ROKL | PROTOCOL</title>
+    <title>PR2ROKL | PROTOCOL V5</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Mono:wght@400;700&display=swap');
 
-        :root {
-            --bg: #000;
-            --p-bg: #080808;
-            --text: #fff;
-            --dim: #444;
-        }
+        :root { --bg: #000; --text: #fff; --dim: #666; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: var(--bg); 
-            color: var(--text); 
+            background: var(--bg); color: var(--text); 
             font-family: 'Space Mono', monospace; 
-            height: 100dvh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
+            height: 100dvh; overflow: hidden; 
         }
 
-        /* Инвертирующий курсор для ПК */
-        #cursor {
-            width: 22px; height: 22px;
-            border: 1px solid #fff;
-            position: fixed;
-            pointer-events: none;
-            z-index: 1000;
-            mix-blend-mode: difference;
-            display: none;
+        /* Яркая сетка */
+        #grid {
+            position: fixed; inset: -100px;
+            background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px);
+            background-size: 60px 60px; z-index: -1;
         }
-        @media (pointer: fine) { body { cursor: none; } #cursor { display: block; } }
-
-        /* Сетка фона */
-        .grid { position: fixed; inset: 0; background-image: linear-gradient(#0a0a0a 1px, transparent 1px), linear-gradient(90deg, #0a0a0a 1px, transparent 1px); background-size: 40px 40px; z-index: -1; }
 
         /* Навигация */
-        nav { padding: clamp(20px, 5vw, 30px); display: flex; justify-content: space-between; align-items: flex-start; }
-        .menu { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        nav { 
+            padding: 30px; display: flex; justify-content: space-between; 
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .menu { display: flex; gap: 20px; }
         .menu-btn { 
             background: none; border: none; color: #fff; 
-            font-family: 'Syncopate', sans-serif; 
-            font-size: clamp(14px, 2vw, 18px); 
-            cursor: pointer; opacity: 0.2; transition: 0.3s; 
+            font-family: 'Syncopate', sans-serif; font-size: 10px; 
+            cursor: pointer; opacity: 0.3; transition: 0.3s; 
         }
         .menu-btn.active { opacity: 1; border-bottom: 1px solid #fff; }
 
-        /* Контент */
-        main { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
-        .section { display: none; text-align: center; width: 100%; }
-        .section.active { display: block; }
-        .big { font-family: 'Syncopate', sans-serif; font-size: clamp(45px, 15vw, 120px); letter-spacing: -5px; text-transform: uppercase; }
+        main { height: 100dvh; display: flex; position: relative; }
+        .section { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .section.active { display: flex; }
 
-        /* ПЛЕЕР */
-        .player-bar { 
-            background: var(--p-bg); 
-            border-top: 1px solid #111; 
-            padding: 10px 20px 25px; 
-            z-index: 500; 
+        /* Shop Styles */
+        #shop-canvas { position: absolute; inset: 0; pointer-events: none; }
+        .nothing { font-family: 'Syncopate', sans-serif; font-size: clamp(30px, 10vw, 80px); animation: shake 0.5s infinite alternate; }
+        @keyframes shake { from { transform: skewX(-5deg); } to { transform: skewX(5deg); } }
+
+        /* --- INFO Styles --- */
+        .social-wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .info-btn { 
+            color: #fff; text-decoration: none; border: 1px solid #fff; 
+            padding: 20px 40px; font-size: 12px; letter-spacing: 5px; transition: 0.3s; 
+        }
+        .info-btn:hover { background: #fff; color: #000; }
+
+        /* --- ПЛЕЕР-ТРАНСФОРМЕР --- */
+        #player-ui {
+            position: fixed;
+            z-index: 950;
+            background: rgba(8, 8, 8, 0.98);
+            backdrop-filter: blur(20px);
+            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #222;
         }
 
-        /* Зона перемотки */
-        .seek-zone { 
-            width: 100%; height: 20px; 
-            display: flex; align-items: center; 
-            cursor: pointer; 
+        /* ПОЛНЫЙ ЭКРАН */
+        #player-ui.full {
+            inset: 0; border: none;
+            padding: 60px;
+            justify-content: center;
+            align-items: center;
         }
-        .seek-bg { width: 100%; height: 2px; background: #222; position: relative; }
+
+        /* МИНИ-ПЛЕЕР */
+        #player-ui.mini {
+            bottom: 30px; right: 30px;
+            width: 350px; height: 140px;
+            border-radius: 30px;
+            padding: 20px;
+            justify-content: space-between;
+        }
+
+        .track-meta { width: 100%; text-align: center; transition: 0.5s; }
+        .full .track-name { font-family: 'Syncopate', sans-serif; font-size: clamp(24px, 5vw, 50px); margin-bottom: 15px; display: block; }
+        .mini .track-name { font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Полоса перемотки */
+        .seek-box { width: 100%; padding: 10px 0; cursor: pointer; }
+        .seek-track { width: 100%; height: 2px; background: #222; position: relative; }
         .seek-fill { height: 100%; background: #fff; width: 0%; position: absolute; }
 
-        /* Элементы управления */
-        .ui-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-top: 5px; }
-        
-        .track-info { flex: 1; min-width: 0; }
-        .t-main { font-weight: 700; font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .t-sub { font-size: 10px; color: var(--dim); margin-top: 2px; display: block; }
+        .controls-main { display: flex; align-items: center; justify-content: center; width: 100%; gap: 30px; transition: 0.5s; }
+        .mini .controls-main { gap: 15px; margin-top: 5px; }
 
-        .controls { display: flex; align-items: center; gap: clamp(15px, 5vw, 25px); }
-        .c-btn { background: none; border: none; color: #fff; cursor: pointer; font-size: 20px; }
+        .btn { background: none; border: none; color: #fff; cursor: pointer; font-size: 20px; transition: 0.3s; }
+        .mini .btn { font-size: 16px; }
 
-        /* Кнопка "Две башни" */
-        .tower-btn { 
-            width: 44px; height: 44px; 
-            background: #000; border: 1px solid #222; 
-            display: flex; gap: 6px; align-items: center; justify-content: center; 
-            cursor: pointer;
+        .play-wrap {
+            border: 1px solid #fff; border-radius: 50%;
+            display: flex; gap: 5px; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s;
         }
-        .tower { width: 4px; height: 16px; background: #fff; transition: 0.3s; }
+        .full .play-wrap { width: 80px; height: 80px; }
+        .mini .play-wrap { width: 40px; height: 40px; }
+        .tower { width: 3px; background: #fff; }
+        .full .tower { height: 25px; width: 5px; }
+        .mini .tower { height: 12px; }
 
         /* Громкость */
-        .vol-box { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: flex-end; }
-        .vol-input { -webkit-appearance: none; width: 70px; height: 2px; background: #222; outline: none; }
-        .vol-input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: #fff; cursor: pointer; border-radius: 50%; }
+        .volume-box { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
+        .vol-slider { -webkit-appearance: none; width: 80px; height: 1px; background: #444; outline: none; }
+        .vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: #fff; border-radius: 50%; }
 
         @media (max-width: 600px) {
-            .vol-box { display: none; }
-            .player-bar { padding: 10px 15px 35px; }
+            #player-ui.mini { width: 92%; right: 4%; bottom: 20px; height: 120px; }
+            .volume-box { display: none; } 
         }
     </style>
 </head>
 <body>
 
-    <div id="cursor"></div>
-    <div class="grid"></div>
+    <div id="grid"></div>
 
     <nav>
-        <div style="font-size: 10px; color: #333; letter-spacing: 2px; font-weight: 700;">PR2ROKL // PROTOCOL</div>
+        <div style="font-size: 10px; letter-spacing: 2px;">PR2ROKL // PROTOCOL</div>
         <div class="menu">
-            <button class="menu-btn active" onclick="tab('tour')">TOUR</button>
+            <button class="menu-btn" onclick="tab('tour')">TOUR</button>
             <button class="menu-btn" onclick="tab('shop')">SHOP</button>
+            <button class="menu-btn active" onclick="tab('player')">PLAYER</button>
             <button class="menu-btn" onclick="tab('info')">INFO</button>
         </div>
     </nav>
 
     <main>
-        <section id="tour" class="section active"><h1 class="big">SOON</h1></section>
-        <section id="shop" class="section"><p style="opacity:0.2; letter-spacing:10px; font-size: 10px;">VOID_CONTENT</p></section>
+        <section id="tour" class="section"><h1 style="font-family:Syncopate; font-size:8vw;">SOON</h1></section>
+        
+        <section id="shop" class="section">
+            <canvas id="shop-canvas"></canvas>
+            <h2 class="nothing">NOTHING</h2>
+        </section>
+
+        <section id="player" class="section active"></section>
+
         <section id="info" class="section">
-            <a href="https://t.me/pr2rokl" target="_blank" style="color:#fff; text-decoration:none; border: 1px solid #222; padding: 15px 30px; font-size: 12px; letter-spacing: 2px;">TELEGRAM</a>
+            <div class="social-wrap">
+                <a href="https://t.me/pr2rokl" target="_blank" class="info-btn">TELEGRAM</a>
+                <a href="https://www.instagram.com/pr2rokl?igsh=ZWc1aTNuYjJtYm5m" target="_blank" class="info-btn">INSTAGRAM</a>
+            </div>
         </section>
     </main>
 
-    <div class="player-bar">
-        <div class="seek-zone" id="seek-bar">
-            <div class="seek-bg"><div id="seek-fill" class="seek-fill"></div></div>
+    <div id="player-ui" class="full">
+        <div class="track-meta">
+            <span id="name" class="track-name">pr2rokl - Stay Higher</span>
         </div>
 
-        <div class="ui-row">
-            <div class="track-info">
-                <span id="name" class="t-main">pr2rokl - Stay Higher</span>
-                <span id="art" class="t-sub">Streaming now</span>
-            </div>
+        <div class="seek-box" id="seek-bar">
+            <div class="seek-track"><div id="seek-fill" class="seek-fill"></div></div>
+        </div>
 
-            <div class="controls">
-                <button class="c-btn" onclick="change(-1)">⏮</button>
-                <div class="tower-btn" onclick="toggle()">
-                    <div id="towers" style="display:flex; gap:6px; opacity: 0.3;">
-                        <div class="tower"></div><div class="tower"></div>
-                    </div>
+        <div class="controls-main">
+            <button class="btn" onclick="change(-1)">⏮</button>
+            <div class="play-wrap" onclick="toggle()">
+                <div id="towers" style="display:flex; gap:5px; opacity: 0.3;">
+                    <div class="tower"></div><div class="tower"></div>
                 </div>
-                <button class="c-btn" onclick="change(1)">⏭</button>
             </div>
+            <button class="btn" onclick="change(1)">⏭</button>
 
-            <div class="vol-box">
-                <input type="range" class="vol-input" min="0" max="1" step="0.01" value="1" oninput="setVol(this.value)">
+            <div class="volume-box">
+                <input type="range" class="vol-slider" min="0" max="1" step="0.01" value="1" oninput="setVol(this.value)">
             </div>
         </div>
     </div>
@@ -158,69 +180,77 @@
 
     <script>
         const songs = [
-            { display: "pr2rokl - Stay Higher", sub: "Official Track", f: "pr2rokI' - Stay Higher.mp3" },
-            { display: "Underground - pr2rokl, TheRichBoySwag", sub: "Collab", f: "pr2rokI', TheRichBoySwag - Underground.mp3" },
-            { display: "DANCE - pr2rokl, nett", sub: "Collab", f: "pr2rokI', nett - DANCE.mp3" }
+            { display: "pr2rokl - Stay Higher", f: "pr2rokI' - Stay Higher.mp3" },
+            { display: "Underground - pr2rokl, TheRichBoySwag", f: "pr2rokI', TheRichBoySwag - Underground.mp3" },
+            { display: "DANCE - pr2rokl, nett", f: "pr2rokI', nett - DANCE.mp3" }
         ];
 
         let cur = 0;
         const audio = document.getElementById('core');
         const fill = document.getElementById('seek-fill');
         const towers = document.getElementById('towers');
+        const ui = document.getElementById('player-ui');
 
         function loadSong(i) {
-            const s = songs[i];
-            document.getElementById('name').innerText = s.display;
-            document.getElementById('art').innerText = s.sub;
-            audio.src = s.f;
+            audio.src = songs[i].f;
+            document.getElementById('name').innerText = songs[i].display;
         }
 
         function toggle() {
-            if(audio.paused) { 
-                audio.play().catch(e => console.log("Нажмите на страницу для активации звука")); 
-                towers.style.opacity = "1"; 
-            } else { 
-                audio.pause(); 
-                towers.style.opacity = "0.3"; 
-            }
+            if(audio.paused) { audio.play(); towers.style.opacity = "1"; }
+            else { audio.pause(); towers.style.opacity = "0.3"; }
         }
 
         function change(d) {
             cur = (cur + d + songs.length) % songs.length;
-            loadSong(cur); 
-            audio.play(); 
-            towers.style.opacity = "1";
+            loadSong(cur); audio.play(); towers.style.opacity = "1";
         }
-
-        // Перемотка кликом
-        document.getElementById('seek-bar').onclick = (e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            audio.currentTime = pos * audio.duration;
-        };
 
         function setVol(v) { audio.volume = v; }
 
-        audio.ontimeupdate = () => {
-            if (audio.duration) {
-                fill.style.width = (audio.currentTime / audio.duration * 100) + "%";
-            }
+        document.getElementById('seek-bar').onclick = (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
         };
 
-        // Вкладки
+        audio.ontimeupdate = () => { if(audio.duration) fill.style.width = (audio.currentTime/audio.duration*100) + "%"; };
+
         function tab(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             event.currentTarget.classList.add('active');
+
+            // Анимация трансформации
+            ui.className = (id === 'player') ? 'full' : 'mini';
+            if(id === 'shop') initWind();
         }
 
-        // Курсор
-        const cursor = document.getElementById('cursor');
+        // Параллакс
         document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX - 11 + 'px';
-            cursor.style.top = e.clientY - 11 + 'px';
+            const moveX = (e.clientX / window.innerWidth - 0.5) * 40;
+            const moveY = (e.clientY / window.innerHeight - 0.5) * 40;
+            document.getElementById('grid').style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
+
+        function initWind() {
+            const c = document.getElementById('shop-canvas');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            let p = [];
+            for(let i=0; i<150; i++) p.push({x:Math.random()*c.width, y:Math.random()*c.height, s:Math.random()*15+20, o:Math.random()*0.7+0.3});
+            function draw() {
+                if(!document.getElementById('shop').classList.contains('active')) return;
+                ctx.clearRect(0,0,c.width,c.height);
+                p.forEach(part => {
+                    ctx.fillStyle = `rgba(255,255,255,${part.o})`;
+                    part.x += part.s; if(part.x > c.width) part.x = -10;
+                    ctx.fillRect(part.x, part.y, 2, 1);
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
 
         loadSong(0);
     </script>
