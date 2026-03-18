@@ -3,236 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PR2ROKL | VERSION 5.1</title>
+    <title>PR2ROKL | GLASS PROTOCOL v3 // HIGH GLOW</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Mono:wght@400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;600&display=swap');
 
         :root {
-            --bg: #050505;
+            /* --- ОБНОВЛЕННЫЕ ЦВЕТА (ЯРЧЕ) --- */
+            --bg: #0d0d12; /* Глубокий, но более светлый темно-серый */
+            --glass: rgba(255, 255, 255, 0.12); /* Ярче матовое стекло */
+            --glass-border: rgba(255, 255, 255, 0.25); /* Ярче границы */
             --accent: #ffffff;
-            --line: rgba(255, 255, 255, 0.1);
-            --text-dim: #666;
+            --text-dim: rgba(255, 255, 255, 0.75); /* Ярче тусклый текст */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: var(--bg); color: #fff; 
-            font-family: 'Space Mono', monospace;
+            background: var(--bg); color: rgba(255, 255, 255, 1); /* Ярче основной текст */
+            font-family: 'Inter', sans-serif;
             height: 100dvh; overflow: hidden;
             display: flex; flex-direction: column;
+            position: relative;
         }
 
-        /* Тонкая сетка для объема */
-        .bg-grid {
-            position: fixed; inset: 0;
-            background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none; z-index: -1;
-            opacity: 0.3;
+        /* --- ОБНОВЛЕННЫЙ ФОН (ЕЩЕ ЯРЧЕ) --- */
+        .ambient-bg {
+            position: fixed; inset: 0; z-index: -2;
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(100, 100, 200, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 10% 80%, rgba(60, 40, 100, 0.4) 0%, transparent 60%);
+            opacity: 0.6; /* Повышенная непрозрачность градиентов */
         }
 
+        /* Усиленное свечение */
+        .bg-glow {
+            position: fixed; top: 50%; left: 50%;
+            width: 100vw; height: 100vw;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 80%);
+            transform: translate(-50%, -50%);
+            z-index: -1; filter: blur(150px);
+            animation: breathe 10s infinite alternate ease-in-out;
+            opacity: 0.5; /* Ярче свечение */
+        }
+
+        /* Усиленный кибернетический паттерн */
+        .bg-pattern {
+            position: fixed; inset: -100px; z-index: -1;
+            background-image: 
+                linear-gradient(var(--glass-border) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, var(--glass-border) 1.5px, transparent 1.5px);
+            background-size: 80px 80px;
+            opacity: 0.5; /* Повышенная непрозрачность сетки */
+            transform: perspective(600px) rotateX(60deg) translateY(-150px);
+            mask-image: radial-gradient(circle, black 50%, transparent 95%);
+        }
+
+        @keyframes breathe { from { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } to { opacity: 0.8; transform: translate(-50%, -53%) scale(1.2); } }
+        /* ---------------------------------- */
+
+        /* НАВИГАЦИЯ (GLASS PILL) */
         nav {
-            padding: 25px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--line);
+            padding: 20px clamp(20px, 5vw, 40px); 
+            display: flex; justify-content: space-between; align-items: center;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 40px); max-width: 600px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
         }
-        .logo { font-family: 'Syncopate'; font-size: clamp(10px, 4vw, 14px); letter-spacing: 2px; }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-item { 
-            font-size: 9px; color: var(--text-dim); cursor: pointer; 
-            transition: 0.3s; text-transform: uppercase; font-weight: bold;
+        .logo { font-family: 'Syncopate'; font-size: 14px; letter-spacing: -1px; }
+        .nav-items { display: flex; gap: clamp(10px, 3vw, 25px); }
+        .nav-link { 
+            font-size: 11px; font-weight: 600; color: var(--text-dim); text-decoration: none; 
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
         }
-        .nav-item.active { color: #fff; }
+        .nav-link.active, .nav-link:hover { color: #fff; }
 
+        /* КОНТЕНТ (GLASS PANEL) */
         main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .section { display: none; width: 100%; max-width: 450px; text-align: center; }
-        .section.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .content-panel {
+            width: 100%; max-width: 500px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            padding: clamp(20px, 6vw, 40px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
 
-        /* CONTACT */
-        .f-group { border-bottom: 1px solid var(--line); margin-bottom: 15px; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CONTACT FORM */
+        .f-input { margin-bottom: 15px; }
         input, textarea {
-            width: 100%; background: transparent; border: none; padding: 15px 5px;
-            color: #fff; font-family: 'Space Mono'; outline: none;
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); 
+            padding: 18px; color: rgba(255, 255, 255, 1); font-family: 'Inter'; outline: none; font-size: 14px;
+            border-radius: 12px; transition: 0.3s;
         }
-        .btn-send {
+        input:focus { border-color: rgba(255,255,255,0.4); background: rgba(0,0,0,0.2); }
+        textarea { height: 110px; resize: none; }
+        .submit-btn {
             width: 100%; padding: 18px; background: #fff; color: #000;
-            font-family: 'Syncopate'; font-size: 10px; border: none; cursor: pointer;
+            font-family: 'Syncopate'; font-size: 11px; border: none; cursor: pointer;
+            border-radius: 12px; transition: 0.3s; font-weight: 700;
+        }
+        .submit-btn:hover { background: #ccc; transform: translateY(-2px); }
+
+        /* INFO (GLASS ITEMS // ЯРЧЕ) */
+        .info-list { text-align: left; display: flex; flex-direction: column; gap: 12px; }
+        .info-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 22px; background: rgba(255,255,255,0.15); /* Ярче фон кнопок */
+            border: 1px solid var(--glass-border); border-radius: 14px;
+            text-decoration: none; color: #fff; transition: 0.3s;
+        }
+        .info-item:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.25); }
+        .info-label { font-family: 'Syncopate'; font-size: 12px; }
+        .info-type { font-size: 10px; color: var(--text-dim); text-transform: uppercase;}
+
+        /* ПЛЕЕР (FLOATING GLASS PILL // ЯРЧЕ) */
+        .player-hud {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 40px); max-width: 600px;
+            background: rgba(15, 15, 20, 0.9); /* Ярче фон плеера */
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            padding: 15px clamp(15px, 4vw, 25px);
+            z-index: 1000;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: space-between; gap: 15px;
         }
 
-        /* INFO - УЛУЧШЕННЫЙ СПИСОК */
-        .info-container { border-top: 1px solid var(--line); }
-        .info-link {
-            display: flex; justify-content: space-between; padding: 25px 10px;
-            border-bottom: 1px solid var(--line); text-decoration: none; color: #fff;
-            transition: background 0.3s;
-        }
-        .info-link:hover { background: rgba(255,255,255,0.03); }
-        .info-label { font-family: 'Syncopate'; font-size: 11px; }
-        .info-val { color: var(--text-dim); font-size: 10px; }
+        .p-info { display: flex; flex-direction: column; flex: 1; min-width: 0;}
+        .p-title { font-family: 'Syncopate'; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;}
+        .p-artist { font-size: 9px; color: var(--text-dim); }
 
-        /* ПЛЕЕР */
-        .player-zone {
-            background: #000; border-top: 1px solid #fff;
-            padding: 20px 30px 40px; position: relative;
-        }
-        .progress-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: #111; cursor: pointer;
-        }
-        .progress-fill { height: 100%; background: #fff; width: 0%; }
-
-        .player-content { display: flex; justify-content: space-between; align-items: center; }
-        .t-info { text-align: left; }
-        .t-title { font-family: 'Syncopate'; font-size: 11px; display: block; margin-bottom: 5px; }
-        .t-artist { font-size: 9px; color: var(--text-dim); }
-
-        .p-controls { display: flex; align-items: center; gap: 25px; }
-        .p-skip { background: none; border: none; color: #fff; cursor: pointer; font-size: 14px; }
+        .p-controls { display: flex; align-items: center; gap: clamp(15px, 4vw, 20px); }
+        .p-btn { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; opacity: 0.7; transition: 0.3s; }
+        .p-btn:hover { opacity: 1; }
         
-        /* ТА САМАЯ КНОПКА С ТРЕУГОЛЬНИКОМ */
-        .p-main {
-            width: 48px; height: 48px; border: 1px solid #fff; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: 0.2s;
+        /* КНОПКА PLAY (Трансформер Треугольник/Пауза) */
+        .p-main { 
+            width: 44px; height: 44px; border: 1px solid var(--glass-border); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
         }
-        .p-main:hover { background: #fff; color: #000; }
+        .p-main:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
         
-        /* Иконки внутри кнопки */
-        .icon-play {
+        .play-icon {
             width: 0; height: 0; 
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-left: 12px solid currentColor;
-            margin-left: 4px; /* смещение для центровки треугольника */
-            display: block;
+            border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+            border-left: 12px solid #fff; margin-left: 3px; display: block;
         }
-        .icon-pause {
-            display: none;
-            gap: 4px;
+        .pause-icon { display: none; gap: 5px; }
+        .pause-bar { width: 4px; height: 16px; background: #fff; border-radius: 1px;}
+
+        .playing .play-icon { display: none; }
+        .playing .pause-icon { display: flex; }
+
+        /* Полоса прогресса интегрирована снизу Hud-а */
+        .p-progress {
+            position: absolute; bottom: 0; left: 30px; width: calc(100% - 60px);
+            height: 2px; background: rgba(255,255,255,0.1); cursor: pointer;
         }
-        .pause-bar { width: 4px; height: 16px; background: currentColor; }
+        .p-fill { height: 100%; background: #fff; width: 0%; border-radius: 1px; box-shadow: 0 0 12px rgba(255,255,255,0.8);}
 
-        /* Состояния плеера */
-        .playing .icon-play { display: none; }
-        .playing .icon-pause { display: flex; }
-
+        /* Мобильная адаптация */
         @media (max-width: 600px) {
-            .player-content { flex-direction: column; gap: 20px; text-align: center; }
-            .t-info { text-align: center; }
+            nav { top: 10px; width: calc(100% - 20px); padding: 12px 18px; }
+            .logo { font-size: 12px; }
+            .nav-link { font-size: 9px; }
+            .p-artist { display: none; }
+            .p-controls { gap: 14px; }
+            .p-title { font-size: 10px; }
+            .p-main { width: 40px; height: 40px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-grid"></div>
-
+    <div class="ambient-bg"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-pattern"></div>
     <nav>
         <div class="logo">PR2ROKL</div>
-        <div class="nav-links">
-            <span class="nav-item" onclick="tab('tour', this)">Tour</span>
-            <span class="nav-item" onclick="tab('contact', this)">Contact</span>
-            <span class="nav-item active" onclick="tab('info', this)">Info</span>
+        <div class="nav-items">
+            <span class="nav-link" onclick="tab('tour', this)">Tour</span>
+            <span class="nav-link" onclick="tab('player', this)">Archive</span>
+            <span class="nav-link" onclick="tab('contact', this)">Contact</span>
+            <span class="nav-link active" onclick="tab('info', this)">Info</span>
         </div>
     </nav>
 
     <main>
-        <section id="tour" class="section">
-            <h1 style="font-family:'Syncopate'; font-size: 20px; opacity: 0.2;">COMMING_2026</h1>
-        </section>
+        <div class="content-panel">
+            <section id="tour" class="section">
+                <h1 style="font-family:'Syncopate'; font-size: 18px; opacity: 0.3; letter-spacing: 6px; text-align: center;">PENDING_STATUS</h1>
+            </section>
 
-        <section id="contact" class="section">
-            <div class="f-group"><input type="text" id="name" placeholder="IDENT_NAME"></div>
-            <div class="f-group"><textarea id="msg" placeholder="MESSAGE_DATA"></textarea></div>
-            <button class="btn-send" onclick="send()">EXECUTE_SEND</button>
-            <p id="st" style="font-size: 9px; margin-top: 15px; color: var(--text-dim);"></p>
-        </section>
+            <section id="player" class="section">
+                <h1 style="font-family:'Syncopate'; font-size: 18px; opacity: 0.3; text-align: center;">PROTOCOL_ARCHIVE</h1>
+            </section>
 
-        <section id="info" class="section active">
-            <div class="info-container">
-                <a href="https://t.me/pr2rokl" target="_blank" class="info-link">
-                    <span class="info-label">Telegram</span>
-                    <span class="info-val">@pr2rokl</span>
-                </a>
-                <a href="https://instagram.com/pr2rokl" target="_blank" class="info-link">
-                    <span class="info-label">Instagram</span>
-                    <span class="info-val">FOLLOW</span>
-                </a>
-            </div>
-        </section>
+            <section id="contact" class="section">
+                <div class="f-input"><input type="text" id="name" placeholder="Identification"></div>
+                <div class="f-input"><textarea id="msg" placeholder="Your Message / Request"></textarea></div>
+                <button class="submit-btn" onclick="send()">EXECUTE</button>
+                <p id="st" style="font-size: 10px; margin-top: 15px; color: var(--text-dim); text-align: center;"></p>
+            </section>
+
+            <section id="info" class="section active">
+                <div class="info-list">
+                    <a href="https://t.me/pr2rokl" target="_blank" class="info-item">
+                        <span class="info-label">Telegram</span>
+                        <span class="info-type">PROTOCOL // 01</span>
+                    </a>
+                    <a href="https://instagram.com/pr2rokl" target="_blank" class="info-item">
+                        <span class="info-label">Instagram</span>
+                        <span class="info-type">CONNECT // 02</span>
+                    </a>
+                    <a href="https://on.soundcloud.com/DrhYAsHIlD0aqQ66bI" target="_blank" class="info-item">
+                        <span class="info-label">SoundCloud</span>
+                        <span class="info-type">FREQUENCY // 03</span>
+                    </a>
+                    </div>
+            </section>
+        </div>
     </main>
 
-    <div class="player-zone" id="player-container">
-        <div class="progress-line" id="pb"><div id="pf" class="progress-fill"></div></div>
-        
-        <div class="player-content">
-            <div class="t-info">
-                <span id="cur-track" class="t-title">Stay Higher</span>
-                <span class="t-artist">pr2rokl // audio_01</span>
-            </div>
+    <div class="player-hud" id="player-unit">
+        <div class="p-info">
+            <span id="t-name" class="p-title">Stay Higher</span>
+            <span class="p-artist">pr2rokl // audio_01</span>
+        </div>
 
-            <div class="p-controls">
-                <button class="p-skip" onclick="skip(-1)">⏮</button>
-                <div class="p-main" id="play-btn" onclick="toggle()">
-                    <div class="icon-play"></div>
-                    <div class="icon-pause">
-                        <div class="pause-bar"></div>
-                        <div class="pause-bar"></div>
-                    </div>
+        <div class="p-controls">
+            <button class="p-btn" onclick="skip(-1)">⏮</button>
+            <div class="p-main" onclick="toggle()">
+                <div class="play-icon"></div>
+                <div class="pause-icon">
+                    <div class="pause-bar"></div>
+                    <div class="pause-bar"></div>
                 </div>
-                <button class="p-skip" onclick="skip(1)">⏭</button>
             </div>
+            <button class="p-btn" onclick="skip(1)">⏭</button>
+        </div>
+
+        <div class="p-progress" id="prog-wrap">
+            <div class="p-fill" id="prog-fill"></div>
         </div>
     </div>
 
-    <audio id="audio"></audio>
+    <audio id="audio-core"></audio>
 
     <script>
         const TOKEN = "7339893967:AAHV9K92D2uX8f_N8Xj_73663b6k9B9bQvE";
         const CHAT = "6483020703";
 
-        const playlist = [
+        const tracks = [
             { n: "Stay Higher", s: "project-16_Q09SZjFu.mp3" },
             { n: "Underground", s: "pr2rokI', nett - Underground.mp3" },
             { n: "DANCE", s: "pr2rokI', nett - DANCE.mp3" }
         ];
 
         let cur = 0;
-        const audio = document.getElementById('audio');
-        const fill = document.getElementById('pf');
-        const btn = document.getElementById('player-container');
+        const ac = document.getElementById('audio-core');
+        const fill = document.getElementById('prog-fill');
+        const unit = document.getElementById('player-unit');
 
         function load(i) {
-            audio.src = playlist[i].s;
-            document.getElementById('cur-track').innerText = playlist[i].n;
+            ac.src = tracks[i].s;
+            document.getElementById('t-name').innerText = tracks[i].n;
         }
 
         function toggle() {
-            if(audio.paused) { 
-                audio.play(); 
-                btn.classList.add('playing'); 
-            } else { 
-                audio.pause(); 
-                btn.classList.remove('playing'); 
-            }
+            if(ac.paused) { ac.play(); unit.classList.add('playing'); }
+            else { ac.pause(); unit.classList.remove('playing'); }
         }
 
         function skip(d) {
-            cur = (cur + d + playlist.length) % playlist.length;
-            load(cur); audio.play(); btn.classList.add('playing');
+            cur = (cur + d + tracks.length) % tracks.length;
+            load(cur); ac.play(); unit.classList.add('playing');
         }
 
-        audio.ontimeupdate = () => {
-            fill.style.width = (audio.currentTime / audio.duration * 100) + "%";
+        ac.ontimeupdate = () => {
+            fill.style.width = (ac.currentTime / ac.duration * 100) + "%";
         };
 
-        document.getElementById('pb').onclick = (e) => {
-            audio.currentTime = (e.clientX / window.innerWidth) * audio.duration;
+        document.getElementById('prog-wrap').onclick = (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            ac.currentTime = ((e.clientX - rect.left) / rect.width) * ac.duration;
         };
 
         function tab(id, el) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
         }
@@ -241,12 +310,14 @@
             const n = document.getElementById('name').value;
             const m = document.getElementById('msg').value;
             if(!n || !m) return;
-            document.getElementById('st').innerText = "SENDING...";
+            document.getElementById('st').innerText = "CONNECTING...";
             await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({chat_id: CHAT, text: `SNDER: ${n}\nDATA: ${m}`})
+                body: JSON.stringify({chat_id: CHAT, text: `⚠️ PROTOCOL_MSG\nID: ${n}\nDATA: ${m}`})
             });
-            document.getElementById('st').innerText = "DATA_LOGGED.";
+            document.getElementById('st').innerText = "DATA_DELIVERED.";
+            document.getElementById('name').value = '';
+            document.getElementById('msg').value = '';
         }
 
         load(0);
